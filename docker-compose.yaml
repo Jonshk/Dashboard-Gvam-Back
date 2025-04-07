@@ -1,0 +1,26 @@
+version: '3'
+services:
+  postgres:
+    image: postgres
+    container_name: local-postgres
+    environment:
+      POSTGRES_USER: gvam
+      POSTGRES_PASSWORD: GVAM
+      POSTGRES_DB: inventariogvam
+      LC_ALL: en_US.UTF-8
+      LANG: en_US.UTF-8
+    ports:
+      - "5432:5432"
+    volumes:
+      - "./postgres-init:/docker-entrypoint-initdb.d"
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api  # Asegúrate de tener este Dockerfile
+    container_name: fastapi-app
+    environment: {}  # Variables de entorno adicionales si las necesitas
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres
