@@ -12,7 +12,7 @@ import init_admin
 
 # importa routers…
 from endpoints.auth       import auth_router
-from endpoints.centers    import centers_router
+from endpoints.centers    import router as centers_router
 from endpoints.orders     import orders_router
 from endpoints.repairs    import repairs_router
 from endpoints.receptions import receptions_router

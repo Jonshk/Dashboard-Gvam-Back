@@ -8,3 +8,5 @@ SQLAlchemy
 email-validator
 pydantic-settings>=2.9.1
 passlib[bcrypt]
+pandas
+python-multipart
