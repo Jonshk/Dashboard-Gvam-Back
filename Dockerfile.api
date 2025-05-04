@@ -1,0 +1,43 @@
+# Dockerfile.api
+
+FROM python:3.10-slim
+
+# 1) Instalamos postgresql-client (pg_isready) y dependencias de compilación
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends \
+      postgresql-client \
+      gcc \
+      libpq-dev \
+ && rm -rf /var/lib/apt/lists/*
+
+# 2) Directorio de trabajo
+WORKDIR /app
+
+# 3) Copiamos e instalamos requirements
+COPY requirements.txt .
+RUN pip install --upgrade pip \
+ && pip install --no-cache-dir -r requirements.txt
+
+# 4) Copiamos todo el código de la aplicación
+COPY . .
+
+# 5) Aseguramos imports absolutos
+ENV PYTHONPATH=/app
+
+# 6) Valores por defecto para conexión si no vienen de docker-compose/.env
+ENV DB_HOST=postgres
+ENV DB_PORT=5432
+
+# 7) Exponemos el puerto de FastAPI
+EXPOSE 8000
+
+# 8) Esperamos a Postgres y arrancamos Uvicorn
+CMD ["sh", "-c", "\
+  echo '→ Esperando a Postgres en '${DB_HOST}:${DB_PORT} && \
+  until pg_isready -h ${DB_HOST} -p ${DB_PORT}; do \
+    sleep 1; \
+    echo -n '.'; \
+  done; \
+  echo '\\n→ Postgres listo. Arrancando FastAPI...' && \
+  uvicorn main:app --host 0.0.0.0 --port 8000 --reload \
+"]
