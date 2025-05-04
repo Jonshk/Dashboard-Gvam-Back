@@ -1,0 +1,8 @@
+[build]
+  functions = "netlify/functions"
+  command   = ""    # No hay build paso para Python
+
+[[redirects]]
+  from   = "/api/*"
+  to     = "/.netlify/functions/api_handler"
+  status = 200
