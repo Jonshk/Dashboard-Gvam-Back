@@ -13,10 +13,10 @@ class User(Base):
 
 class Center(Base):
     __tablename__ = "centers"
-
     id          = Column(Integer, primary_key=True, index=True)
     center      = Column(String, nullable=False)
-    phonenumber = Column(String, nullable=False)
+    phonenumber = Column(String, nullable=True)
+
 
     # Relaciones inversas con back_populates
     orders      = relationship(
@@ -59,23 +59,30 @@ class CenterStock(Base):
 
 class Order(Base):
     __tablename__ = "orders"
-
     id               = Column(Integer, primary_key=True, index=True)
     center_id        = Column(Integer, ForeignKey("centers.id"), nullable=False)
     shipping_company = Column(String, nullable=False)
-    order_date       = Column(Date,   nullable=False)
+    order_date       = Column(Date, nullable=False)
+    status           = Column(String, nullable=False, default="Pendiente")
+    comments         = Column(Text,   nullable=True)
 
     center = relationship("Center", back_populates="orders")
-    items  = relationship("OrderItem", back_populates="order", cascade="all, delete-orphan")
+    items  = relationship(
+        "OrderItem",
+        back_populates="order",
+        cascade="all, delete-orphan"
+    )
+
 
 class OrderItem(Base):
     __tablename__ = "order_items"
-
-    order_id     = Column(Integer, ForeignKey("orders.id"), primary_key=True)
-    product_name = Column(String,  primary_key=True)
+    id           = Column(Integer, primary_key=True, index=True)
+    order_id     = Column(Integer, ForeignKey("orders.id"), nullable=False)
+    product_name = Column(String, nullable=False)
     quantity     = Column(Integer, nullable=False)
 
     order = relationship("Order", back_populates="items")
+
 
 class Repair(Base):
     __tablename__ = "repairs"

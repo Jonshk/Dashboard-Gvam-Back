@@ -13,7 +13,7 @@ import init_admin
 # importa routers…
 from endpoints.auth       import auth_router
 from endpoints.centers    import router as centers_router
-from endpoints.orders     import orders_router
+from endpoints.orders     import router as orders_router
 from endpoints.repairs    import repairs_router
 from endpoints.receptions import receptions_router
 from endpoints.stock      import stock_router
@@ -41,11 +41,15 @@ def seed_stock_data():
 
 
 # —————— INICIALIZACIÓN ——————
-# crea todas las tablas
+# (¡OJO! Esto BORRA todas las tablas y datos existentes)
+Base.metadata.drop_all(bind=engine)
+
+# crea todas las tablas con la estructura actual de tus modelos
 Base.metadata.create_all(bind=engine)
 
 # si quieres correr el seeder **antes** de arrancar FastAPI:
 seed_stock_data()
+
 
 app = FastAPI(title="Inventario GVAM API")
 

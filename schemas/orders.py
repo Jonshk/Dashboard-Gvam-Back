@@ -1,33 +1,39 @@
-from pydantic import BaseModel, Field
-from typing import List, Optional
+# backend/schemas/orders.py
+
 from datetime import date
+from typing      import List, Optional
+from pydantic    import BaseModel
 
-class OrderItemCreate(BaseModel):
-    product_name: str = Field(..., example="Monitor")
-    quantity: int = Field(..., example=2)
-
-class OrderItem(OrderItemCreate):
-    order_id: int
+class OrderItem(BaseModel):
+    product_name: str
+    quantity:     int
 
     class Config:
-        from_attributes = True
+        orm_mode = True
 
-class OrderCreate(BaseModel):
-    center_id: int = Field(..., example=1)
-    shipping_company: str = Field(..., example="DHL")
-    order_date: date = Field(..., example="2025-05-03")
-    items: List[OrderItemCreate]
+class OrderBase(BaseModel):
+    center_id:        int
+    shipping_company: str
+    order_date:       date
+    status:           Optional[str] = "Pendiente"
+    comments:         Optional[str] = None
+    items:            List[OrderItem]
+
+    class Config:
+        orm_mode = True
+
+class OrderCreate(OrderBase):
+    pass
 
 class OrderUpdate(BaseModel):
     shipping_company: Optional[str]
-    order_date: Optional[date]
-
-class Order(BaseModel):
-    id: int
-    center_id: int
-    shipping_company: str
-    order_date: date
-    items: List[OrderItem]
+    order_date:       Optional[date]
+    status:           Optional[str]
+    comments:         Optional[str]
+    items:            Optional[List[OrderItem]]
 
     class Config:
-        from_attributes = True
+        orm_mode = True
+
+class Order(OrderBase):
+    id: int
